@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPK Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: white;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .explanation {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .horizontal-inputs {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .results-section {
+            margin-top: 20px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .results-divider {
+            border-top: 1px solid #000;
+            margin: 20px 0;
+        }
+
+        .results-section h2 {
+            text-align: left;
+        }
+
+        .result {
+            margin: 5px 0;
+            display: grid;
+            grid-template-columns: 200px 20px auto;
+            font-size: 1rem;
+        }
+
+        .result-label {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .result-section-gap {
+            margin: 15px 0;
+        }
+
+        .result-global-gap {
+            margin: 30px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>NPK Calculator</h1>
+    <div class="explanation">
+        This calculator estimates the amount of fertilizer needed based on user inputs for the N-P-K blend, square
+        footage, and cost per bag. The calculations help users determine how much fertilizer to purchase for optimal
+        lawn or garden health.
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h3>N-P-K Blend</h3>
+            <div class="horizontal-inputs">
+                <input type="number" id="blendN" placeholder="N" oninput="calculate()">
+                <input type="number" id="blendP" placeholder="P" oninput="calculate()">
+                <input type="number" id="blendK" placeholder="K" oninput="calculate()">
+            </div>
+        </div>
+        <div class="card">
+            <h3>Sqft by 1000</h3>
+            <input type="number" id="sqft" value="43.560" oninput="calculate()">
+        </div>
+        <div class="card">
+            <h3>Cost per Bag</h3>
+            <input type="number" id="costBag" placeholder="Enter cost" oninput="calculate()">
+        </div>
+    </div>
+
+    <div class="results-divider"></div>
+
+    <div class="results-section">
+        <h2>Results</h2>
+        <div class="result">
+            <span class="result-label">#'s per 50lb Bag (N)</span>   |   <span id="poundsN">0</span>
+        </div>
+        <div class="result-global-gap"></div>
+        <div class="result">
+            <span class="result-label">#'s per 50lb Bag (P)</span>   |   <span id="poundsP">0</span>
+        </div>
+        <div class="result-global-gap"></div>
+        <div class="result">
+            <span class="result-label">#'s per 50lb Bag (K)</span>   |   <span id="poundsK">0</span>
+        </div>
+
+        <div class="result">
+            <div class="result-global-gap"></div>
+            <div class="result-global-gap"></div>
+            <div class="result-global-gap"></div>
+            <span class="result-label">Bags per Acre</span>          |   <span id="bagsAcre">0</span>
+        </div>
+        <div class="result-global-gap"></div>
+        <div class="result">
+            <span class="result-label">Pounds per Acre</span>        |   <span id="poundsAcre">0</span>
+        </div>
+        <div class="result-global-gap"></div>
+        <div class="result">
+            <span class="result-label">Pounds per 1000 sqft</span>   |   <span id="poundsSqft">0</span>
+        </div>
+
+
+
+        <div class="result">
+            <div class="result-global-gap"></div>
+            <div class="result-global-gap"></div>
+            <div class="result-global-gap"></div>
+            <span class="result-label">Bags Needed</span>            |   <span id="bagsNeeded">0</span>
+        </div>
+        <div class="result-global-gap"></div>
+        <div class="result">
+            <span class="result-label">Cost per Acre</span>          |   <span id="costAcre">0</span>
+        </div>
+        <div class="result-global-gap"></div>
+        <div class="result">
+            <span class="result-label">Cost per 1000 sqft</span>     |   <span id="costSqft">0</span>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const blendN = parseFloat(document.getElementById('blendN').value) || 0;
+            const blendP = parseFloat(document.getElementById('blendP').value) || 0;
+            const blendK = parseFloat(document.getElementById('blendK').value) || 0;
+            const sqft = parseFloat(document.getElementById('sqft').value) || 0;
+            const costBag = parseFloat(document.getElementById('costBag').value) || 0;
+
+            const maxBlend = Math.max(blendN, blendP, blendK);
+            const maxBlendPound = maxBlend / 2;
+
+            const poundsN = blendN / 2;
+            document.getElementById('poundsN').innerText = poundsN.toFixed(1);
+
+            const poundsP = blendP / 2;
+            document.getElementById('poundsP').innerText = poundsP.toFixed(1);
+
+            const poundsK = blendK / 2;
+            document.getElementById('poundsK').innerText = poundsK.toFixed(1);
+
+            const bagsAcre = 43.5 / maxBlendPound;
+            document.getElementById('bagsAcre').innerText = bagsAcre.toFixed(1);
+
+            const poundsAcre = 50 * bagsAcre;
+            document.getElementById('poundsAcre').innerText = poundsAcre.toFixed(1);
+
+            const poundsSqft = poundsAcre / 43.5;
+            document.getElementById('poundsSqft').innerText = poundsSqft.toFixed(1);
+
+            const bagsNeeded = (bagsAcre * sqft) / 43.5;
+            document.getElementById('bagsNeeded').innerText = bagsNeeded.toFixed(1);
+
+            const costAcre = costBag * bagsAcre;
+            document.getElementById('costAcre').innerText = "$" + costAcre.toFixed(2);
+
+            const costSqft = costAcre / 43.5;
+            document.getElementById('costSqft').innerText = "$" + costSqft.toFixed(2);
+        }
+    </script>
+</body>
+
+</html>
